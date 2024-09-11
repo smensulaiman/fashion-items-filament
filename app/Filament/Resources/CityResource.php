@@ -49,8 +49,7 @@ class CityResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('state_id')
-                    ->numeric()
+                TextColumn::make('state.name')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -60,7 +59,7 @@ class CityResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->defaultSort('name', 'asc')
             ->filters([
                 //
             ])

@@ -31,6 +31,7 @@ class EmployeeResource extends Resource
                 Forms\Components\Section::make('Location')
                     ->schema([
                         Forms\Components\Select::make('country_id')
+                            ->label('Country')
                             ->required()
                             ->relationship(name: 'country', titleAttribute: 'name')
                             ->searchable()
@@ -42,6 +43,7 @@ class EmployeeResource extends Resource
                             ->preload()
                             ->native(false),
                         Forms\Components\Select::make('state_id')
+                            ->label('State')
                             ->required()
                             ->options(fn(Get $get): Collection => State::query()
                                 ->where('country_id', $get('country_id'))
@@ -54,6 +56,7 @@ class EmployeeResource extends Resource
                             ->preload()
                             ->native(false),
                         Forms\Components\Select::make('city_id')
+                            ->label('City')
                             ->required()
                             ->options(fn(Get $get): Collection => City::query()
                                 ->where('state_id', $get('state_id'))
@@ -63,9 +66,10 @@ class EmployeeResource extends Resource
                             ->preload()
                             ->native(false),
                         Forms\Components\Select::make('department_id')
+                            ->label('Department')
                             ->required()
-                            ->options(function (Get $get): Collection {
-                                return Department::all();
+                            ->options(function (): Collection {
+                                return Department::all()->pluck('name', 'id');
                             })
                             ->searchable()
                             ->preload()
@@ -97,8 +101,12 @@ class EmployeeResource extends Resource
                 Forms\Components\Section::make('Dates')
                     ->schema([
                         Forms\Components\DatePicker::make('date_of_birth')
+                            ->native(false)
+                            ->displayFormat('Y-m-d')
                             ->required(),
                         Forms\Components\DatePicker::make('date_of_hired')
+                            ->native(false)
+                            ->displayFormat('Y-m-d')
                             ->required(),
                     ])->columns(2)
             ]);
