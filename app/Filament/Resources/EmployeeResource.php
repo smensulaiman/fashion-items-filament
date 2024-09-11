@@ -3,12 +3,18 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
+use App\Models\City;
+use App\Models\Department;
 use App\Models\Employee;
+use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class EmployeeResource extends Resource
 {
@@ -22,6 +28,49 @@ class EmployeeResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Location')
+                    ->schema([
+                        Forms\Components\Select::make('country_id')
+                            ->required()
+                            ->relationship(name: 'country', titleAttribute: 'name')
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('state_id', null);
+                                $set('city_id', null);
+                            })
+                            ->preload()
+                            ->native(false),
+                        Forms\Components\Select::make('state_id')
+                            ->required()
+                            ->options(fn(Get $get): Collection => State::query()
+                                ->where('country_id', $get('country_id'))
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('city_id', null);
+                            })
+                            ->preload()
+                            ->native(false),
+                        Forms\Components\Select::make('city_id')
+                            ->required()
+                            ->options(fn(Get $get): Collection => City::query()
+                                ->where('state_id', $get('state_id'))
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->live()
+                            ->preload()
+                            ->native(false),
+                        Forms\Components\Select::make('department_id')
+                            ->required()
+                            ->options(function (Get $get): Collection {
+                                return Department::all();
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
+                    ])->columns(2),
                 Forms\Components\Section::make('User Name')
                     ->description('Put the user details here')
                     ->schema([

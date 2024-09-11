@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CountryResource\Pages;
 use App\Models\Country;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -30,7 +31,17 @@ class CountryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('code')
+                    ->required()
+                    ->numeric()
+                    ->maxLength(3),
+                TextInput::make('phonecode')
+                    ->required()
+                    ->numeric()
+                    ->maxLength(5),
             ]);
     }
 
