@@ -6,6 +6,9 @@ use App\Filament\Resources\CityResource\Pages;
 use App\Models\City;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -66,11 +69,27 @@ class CityResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('City Info')
+                    ->schema([
+                        TextEntry::make('state.name')
+                            ->label('State Name'),
+                        TextEntry::make('name')
+                            ->label('City Name'),
+                    ])
+                    ->columns(2)
             ]);
     }
 
@@ -86,7 +105,7 @@ class CityResource extends Resource
         return [
             'index' => Pages\ListCities::route('/'),
             'create' => Pages\CreateCity::route('/create'),
-            'view' => Pages\ViewCity::route('/{record}'),
+            //'view' => Pages\ViewCity::route('/{record}'),
             'edit' => Pages\EditCity::route('/{record}/edit'),
         ];
     }

@@ -4,11 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DepartmentResource\Pages;
 use App\Models\Department;
+use App\Models\Employee;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class DepartmentResource extends Resource
 {
@@ -42,6 +47,9 @@ class DepartmentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('employees_count')
+                    ->counts('employees')
+                    ->label('Employees'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -57,11 +65,30 @@ class DepartmentResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Department Info')
+                    ->schema([
+                        TextEntry::make('name')
+                            ->label('Department'),
+                        TextEntry::make('employees')
+                            ->state(function (Model $record): int {
+                                return $record->employees()->count();
+                            })
+                            ->label('Total Employees')
+                    ])
+                    ->columns(2)
             ]);
     }
 
@@ -77,7 +104,7 @@ class DepartmentResource extends Resource
         return [
             'index' => Pages\ListDepartments::route('/'),
             'create' => Pages\CreateDepartment::route('/create'),
-            'view' => Pages\ViewDepartment::route('/{record}'),
+            //'view' => Pages\ViewDepartment::route('/{record}'),
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];
     }

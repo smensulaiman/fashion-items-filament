@@ -91,6 +91,7 @@ class StateResource extends Resource
                         TextEntry::make('name')
                             ->label('State Name'),
                     ])
+                ->columns(2)
             ]);
     }
 
