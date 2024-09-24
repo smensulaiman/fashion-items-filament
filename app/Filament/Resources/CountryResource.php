@@ -49,13 +49,23 @@ class CountryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Name'),
+                TextColumn::make('name')
+                    ->label('Name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('code')
+                    ->label('Code'),
+                TextColumn::make('phonecode')
+                    ->label('Phone Code')
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
